@@ -16,6 +16,8 @@
       --accent:#ff4da6;
       --green:#22c55e;
       --green2:#16a34a;
+      --good:#00ffb3;
+      --bad:#ff5050;
     }
     *{box-sizing:border-box}
     body{
@@ -41,7 +43,7 @@
       z-index:2;
     }
 
-    /* HEADER */
+    /* Header */
     #header{margin-bottom:14px;}
     .heroTitle{
       display:flex;
@@ -68,10 +70,8 @@
       border:1px solid rgba(255,255,255,.08);
     }
 
-    /* FRONT PAGE TEXT – unified */
-    .start{
-      text-align:center;
-    }
+    /* Front page unified text */
+    .start{text-align:center}
     .frontText{
       font-size:16px;
       line-height:1.45;
@@ -106,7 +106,7 @@
       box-shadow:0 12px 30px rgba(34,197,94,.20);
     }
 
-    /* QUIZ */
+    /* Quiz */
     .qTitle{margin:0 0 12px;font-size:20px;line-height:1.2}
     .answers{display:grid;gap:10px}
     .choice{
@@ -118,12 +118,27 @@
       color:var(--text);
       cursor:pointer;
       font-size:15px;
+      text-align:left;
+      transition:.12s transform,.12s background,.12s border;
     }
-    .choice:hover{background:rgba(255,255,255,.10)}
+    .choice:hover{transform:translateY(-1px);background:rgba(255,255,255,.10)}
     .choice:disabled{opacity:.95;cursor:not-allowed}
     .mini{text-align:center;color:var(--muted);margin-top:12px;font-size:13px}
 
-    /* FINAL */
+    /* Shake on wrong */
+    .shake{
+      animation: shake .35s ease-in-out;
+    }
+    @keyframes shake{
+      0%{transform:translateX(0)}
+      20%{transform:translateX(-8px)}
+      40%{transform:translateX(8px)}
+      60%{transform:translateX(-6px)}
+      80%{transform:translateX(6px)}
+      100%{transform:translateX(0)}
+    }
+
+    /* Final question screen */
     .final{text-align:center}
     .official{font-size:40px;font-weight:950;margin-bottom:6px}
     .question{font-size:28px;font-weight:900;margin-bottom:18px}
@@ -135,7 +150,9 @@
       font-weight:950;
       cursor:pointer;
       border:1px solid rgba(255,255,255,.18);
+      transition:.12s transform,.12s filter;
     }
+    .btnYes:hover,.btnNo:hover{transform:translateY(-1px);filter:brightness(1.02)}
     .btnYes{
       background:rgba(255,77,166,.22);
       border-color:rgba(255,77,166,.55);
@@ -148,24 +165,29 @@
 
     .hidden{display:none}
 
-    /* EMOJI */
-    .burstLayer{position:fixed;inset:0;pointer-events:none;z-index:1}
-    .burst{position:absolute;animation:floatUp linear forwards}
+    /* Fast emoji burst */
+    .burstLayer{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+    .burst{
+      position:absolute;
+      will-change: transform, opacity;
+      opacity:.98;
+      text-shadow: 0 10px 26px rgba(0,0,0,.35);
+      animation: floatUp linear forwards;
+    }
     @keyframes floatUp{
-      from{transform:translateY(0);opacity:0}
-      to{transform:translateY(-120vh);opacity:0}
+      0%   { transform: translateY(0) scale(1); opacity:0; }
+      10%  { opacity:1; }
+      100% { transform: translateY(-120vh) scale(1.25); opacity:0; }
     }
 
-    /* FINAL SCREEN */
+    /* Final "celebrate" screen */
     .celebrate{text-align:center}
     .fade-in{
       opacity:0;
       transform:translateY(6px) scale(.98);
       animation:fadeIn .7s ease-out forwards;
     }
-    @keyframes fadeIn{
-      to{opacity:1;transform:none}
-    }
+    @keyframes fadeIn{to{opacity:1;transform:none}}
   </style>
 </head>
 
@@ -222,15 +244,16 @@
       class="fade-in"
       src="https://i.giphy.com/media/xiPqQWAF25RD4Omzyq/giphy.gif"
       alt="Taylor Swift celebrating"
-      style="max-width:340px;width:100%;border-radius:18px;margin:10px auto;display:block"
+      style="max-width:340px;width:100%;border-radius:18px;margin:10px auto;display:block;box-shadow:0 22px 60px rgba(0,0,0,.45)"
     >
-    <p class="fade-in" style="margin-top:18px;color:#ffd3ea;font-weight:800">
+    <p class="fade-in" style="margin-top:18px;color:#ffd3ea;font-weight:800;line-height:1.35">
       Podjęłaś bardzo dobrą decyzję.<br>
       A 14 lutego wieczorem dowiesz się,
       <strong>jak bardzo</strong> dobrą… 😏
     </p>
   </div>
 
+  <!-- AUDIO -->
   <audio id="song" preload="auto">
     <source src="Taylor_Swift_-_Love_Story_(mp3.pm).mp3" type="audio/mpeg">
   </audio>
@@ -271,18 +294,39 @@ const answersEl=document.getElementById("answers");
 const idxEl=document.getElementById("idx");
 const burstLayer=document.getElementById("burstLayer");
 const song=document.getElementById("song");
+
 let i=0;
 
-function spawn(e){
-  const d=document.createElement("div");
-  d.className="burst";d.textContent=e;
-  d.style.left=Math.random()*100+"vw";
-  d.style.fontSize=16+Math.random()*24+"px";
-  d.style.animationDuration=(.9+Math.random()*.4)+"s";
-  burstLayer.appendChild(d);
-  setTimeout(()=>d.remove(),1200);
+function spawnEmoji(emoji){
+  const el=document.createElement("div");
+  el.className="burst";
+  el.textContent=emoji;
+
+  el.style.left=(Math.random()*100)+"vw";
+  el.style.bottom="-50px";
+  el.style.fontSize=(16+Math.random()*24)+"px";
+  el.style.animationDuration=(1.0+Math.random()*0.5)+"s";
+
+  burstLayer.appendChild(el);
+  setTimeout(()=>el.remove(),1200);
 }
-function rain(e,n){for(let k=0;k<n;k++)setTimeout(()=>spawn(e),k*30)}
+function burstEmojis(emoji,count){
+  let spawned=0;
+  const interval=setInterval(()=>{
+    for(let k=0;k<10;k++){
+      spawnEmoji(emoji);
+      spawned++;
+      if(spawned>=count){clearInterval(interval);break;}
+    }
+  },40);
+}
+
+function clearAnswerStyles(){
+  [...answersEl.children].forEach(btn=>{
+    btn.style.borderColor="rgba(255,255,255,.15)";
+    btn.style.boxShadow="none";
+  });
+}
 
 function render(){
   idxEl.textContent=i+1;
@@ -290,23 +334,51 @@ function render(){
   answersEl.innerHTML="";
   QUIZ[i].a.forEach((t,ix)=>{
     const b=document.createElement("button");
-    b.className="choice";b.textContent=t;
+    b.className="choice";
+    b.textContent=t;
     b.onclick=()=>pick(ix);
     answersEl.appendChild(b);
   });
 }
+
 function lock(v){[...answersEl.children].forEach(b=>b.disabled=v)}
 
 function pick(ix){
+  const correct=QUIZ[i].c;
   lock(true);
-  if(ix===QUIZ[i].c){
-    rain("💖",80);
-    setTimeout(()=>{i++;i<QUIZ.length?render():finish()},400);
+
+  if(ix===correct){
+    // ✅ correct: green + hearts + next
+    answersEl.children[ix].style.borderColor="rgba(0,255,179,.9)";
+    answersEl.children[ix].style.boxShadow="0 0 0 2px rgba(0,255,179,.25)";
+    burstEmojis("💖",90);
+
+    setTimeout(()=>{
+      i++;
+      if(i<QUIZ.length){
+        render();
+      }else{
+        finish();
+      }
+    },450);
+
   }else{
-    rain("😔",80);
-    setTimeout(()=>lock(false),400);
+    // ❌ wrong: red + shake + sad + stay + retry
+    quizBox.classList.remove("shake"); // reset if spam click
+    void quizBox.offsetWidth;          // force reflow
+    quizBox.classList.add("shake");
+
+    answersEl.children[ix].style.borderColor="rgba(255,80,80,.9)";
+    answersEl.children[ix].style.boxShadow="0 0 0 2px rgba(255,80,80,.25)";
+    burstEmojis("😔",90);
+
+    setTimeout(()=>{
+      clearAnswerStyles();
+      lock(false);
+    },450);
   }
 }
+
 function finish(){
   quizBox.classList.add("hidden");
   finalBox.classList.remove("hidden");
@@ -317,14 +389,23 @@ document.getElementById("startBtn").onclick=()=>{
   quizBox.classList.remove("hidden");
   render();
 };
+
 document.getElementById("yes").onclick=async()=>{
+  // IMMEDIATELY show final screen + gif + music
   finalBox.classList.add("hidden");
   celebrateBox.classList.remove("hidden");
+
   try{await song.play()}catch(e){}
-  rain("💖",120);
-  setTimeout(()=>rain("😄",60),400);
+
+  burstEmojis("💖",160);
+  setTimeout(()=>burstEmojis("😄",70),400);
 };
-document.getElementById("no").onclick=()=>rain("😔",60);
+
+document.getElementById("no").onclick=()=>{
+  burstEmojis("😔",60);
+  const b=document.getElementById("no");
+  b.style.transform=`translate(${Math.random()*180-90}px,${Math.random()*120-60}px)`;
+};
 </script>
 </body>
 </html>
