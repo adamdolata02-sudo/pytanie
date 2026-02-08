@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quiz dla Ciebie 💘</title>
+  <style>
+    :root { --bg:#0b0b12; --card:#141427; --text:#f5f5ff; --muted:#b9b9d6; --accent:#ff4da6; }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:radial-gradient(1200px 700px at 20% 0%, #1a0f2a 0%, var(--bg) 45%, #07070d 100%);
+      color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center;
+      padding:24px;
+    }
+    .wrap{width:min(720px,100%);}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px; padding:22px; box-shadow:0 18px 60px rgba(0,0,0,.45);
+      backdrop-filter: blur(8px);
+    }
+    h1{margin:0 0 6px; font-size:22px}
+    p{margin:8px 0; color:var(--muted); line-height:1.35}
+    .top{display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:14px}
+    .badge{font-size:12px; padding:6px 10px; border-radius:999px; background:rgba(255,77,166,.16); border:1px solid rgba(255,77,166,.35); color:#ffd3ea}
+    .q{margin-top:14px; padding:14px; border-radius:14px; background:rgba(0,0,0,.18); border:1px solid rgba(255,255,255,.08)}
+    .q h2{margin:0 0 10px; font-size:18px}
+    .answers{display:grid; gap:10px}
+    button.choice{
+      width:100%; text-align:left; padding:12px 12px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06);
+      color:var(--text); cursor:pointer; font-size:15px;
+      transition:.15s transform, .15s background, .15s border;
+    }
+    button.choice:hover{transform:translateY(-1px); background:rgba(255,255,255,.10); border-color:rgba(255,255,255,.20)}
+    .progress{height:10px; border-radius:999px; background:rgba(255,255,255,.10); overflow:hidden; margin-top:14px}
+    .bar{height:100%; width:0%; background:linear-gradient(90deg, var(--accent), #ff8bd1); transition:.25s width}
+    .row{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap}
+    .small{
+      flex:1; min-width:220px;
+      padding:12px; border-radius:14px; background:rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.08); color:var(--muted); font-size:14px
+    }
+    .final{ text-align:center; padding:18px 10px; }
+    .final h2{font-size:22px; margin:0 0 10px}
+    .big{ font-size:16px; color:var(--text); margin:10px auto 14px; max-width:52ch }
+    .btn{
+      display:inline-flex; gap:8px; align-items:center; justify-content:center;
+      border-radius:12px; padding:12px 14px; border:1px solid rgba(255,77,166,.45);
+      background:rgba(255,77,166,.18); color:#ffd3ea; cursor:pointer; font-weight:600;
+    }
+    .btn:hover{background:rgba(255,77,166,.25)}
+    .two{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+    .ghost{ border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06); color:var(--text); }
+    .note{font-size:12px; color:var(--muted); margin-top:10px}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <div>
+          <h1 id="title">Mały quiz 💘</h1>
+          <p id="subtitle">Najpierw 5 pytań o Was, potem finał.</p>
+        </div>
+        <div class="badge" id="badge">1 / 5</div>
+      </div>
+
+      <div id="quiz" class="q">
+        <h2 id="question">Pytanie</h2>
+        <div class="answers" id="answers"></div>
+
+        <div class="progress" aria-label="Postęp">
+          <div class="bar" id="bar"></div>
+        </div>
+
+        <div class="row">
+          <div class="small" id="hint">Wskazówka: kliknij odpowiedź 😏</div>
+          <div class="small" id="scoreBox">Wynik: 0</div>
+        </div>
+      </div>
+
+      <div id="final" class="final hidden">
+        <h2 id="finalTitle">Okej… czas na najważniejsze 😳</h2>
+        <p class="big" id="finalText">
+          Uwaga: to jest oficjalna prośba.
+          Czy będziesz moją Walentynką? 💘
+        </p>
+        <div class="two">
+          <button class="btn" id="yesBtn">Tak 💖</button>
+          <button class="btn ghost" id="noBtn">Nie 😶</button>
+        </div>
+        <p class="note" id="note"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // EDIT THIS: questions + answers
+    // correct = index of the correct answer (0,1,2,3)
+    const QUIZ = [
+      { q: "Gdzie była nasza pierwsza randka?", a: ["W kawiarni","Na spacerze","W restauracji","W kinie"], correct: 1 },
+      { q: "Co było pierwszym filmem/serialem, który oglądaliśmy razem?", a: ["Breaking Bad","Dune","Reacher","Peaky Blinders"], correct: 0 },
+      { q: "Jaki jest mój „comfort food” przy Tobie?", a: ["Pizza","Sushi","Makaron","Burgery"], correct: 2 },
+      { q: "Co najbardziej mnie zdradza, że jestem zazdrosny? 😅", a: ["Milknę","Zadaję 100 pytań","Udaje mi obojętność","Wszystkie powyższe"], correct: 3 },
+      { q: "Najlepsze wspólne wspomnienie z ostatniego roku to…", a: ["Nasz wyjazd","Pierwszy raz u Ciebie","Długi spacer nocą","To, które TY wybierzesz 😉"], correct: 3 }
+    ];
+
+    const FINAL = {
+      winTitle: "To poszło za dobrze… 😳",
+      okTitle: "Niezły wynik… ale i tak 😏",
+      loseTitle: "Ej, i tak Cię kocham 😂",
+      yesText: "Wiedziałem. To najpiękniejsze TAK 💖",
+      noText: "Nie przyjmuję tej odpowiedzi 😌 Spróbuj jeszcze raz.",
+      note: "PS. Jak klikniesz „Nie”, to nic się nie stanie… poza tym, że będę dramatyzował 3 sekundy."
+    };
+
+    let i = 0;
+    let score = 0;
+
+    const badge = document.getElementById("badge");
+    const questionEl = document.getElementById("question");
+    const answersEl = document.getElementById("answers");
+    const bar = document.getElementById("bar");
+    const scoreBox = document.getElementById("scoreBox");
+    const quizBox = document.getElementById("quiz");
+    const finalBox = document.getElementById("final");
+    const finalTitle = document.getElementById("finalTitle");
+    const finalText = document.getElementById("finalText");
+    const note = document.getElementById("note");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+
+    function render(){
+      const total = QUIZ.length;
+      badge.textContent = `${i+1} / ${total}`;
+      questionEl.textContent = QUIZ[i].q;
+      answersEl.innerHTML = "";
+
+      QUIZ[i].a.forEach((txt, idx) => {
+        const b = document.createElement("button");
+        b.className = "choice";
+        b.textContent = txt;
+        b.addEventListener("click", () => pick(idx));
+        answersEl.appendChild(b);
+      });
+
+      bar.style.width = `${(i/total)*100}%`;
+      scoreBox.textContent = `Wynik: ${score}`;
+    }
+
+    function pick(idx){
+      const isCorrect = idx === QUIZ[i].correct;
+      if(isCorrect) score++;
+
+      Array.from(answersEl.children).forEach((btn, bIdx) => {
+        btn.disabled = true;
+        if(bIdx === QUIZ[i].correct) btn.style.borderColor = "rgba(0,255,170,.55)";
+        if(bIdx === idx && !isCorrect) btn.style.borderColor = "rgba(255,80,80,.55)";
+        btn.style.background = "rgba(255,255,255,.05)";
+      });
+
+      scoreBox.textContent = `Wynik: ${score}`;
+
+      setTimeout(() => {
+        i++;
+        if(i < QUIZ.length) render();
+        else finish();
+      }, 650);
+    }
+
+    function finish(){
+      quizBox.classList.add("hidden");
+      finalBox.classList.remove("hidden");
+      bar.style.width = `100%`;
+
+      const total = QUIZ.length;
+      const ratio = score / total;
+
+      finalTitle.textContent =
+        ratio >= 0.8 ? FINAL.winTitle :
+        ratio >= 0.5 ? FINAL.okTitle :
+        FINAL.loseTitle;
+
+      finalText.innerHTML = `Zdobyłaś <b>${score}/${total}</b>.<br><br>Czy będziesz moją Walentynką? 💘`;
+      note.textContent = FINAL.note;
+
+      yesBtn.onclick = () => {
+        finalText.textContent = FINAL.yesText;
+        note.textContent = "💘";
+        noBtn.classList.add("hidden");
+        yesBtn.textContent = "Uśmiech 😌";
+      };
+
+      noBtn.onclick = () => {
+        note.textContent = FINAL.noText;
+        const dx = (Math.random()*140 - 70);
+        const dy = (Math.random()*90 - 45);
+        noBtn.style.transform = `translate(${dx}px, ${dy}px)`;
+      };
+    }
+
+    render();
+  </script>
+</body>
+</html>
