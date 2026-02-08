@@ -42,9 +42,7 @@
     }
 
     /* Big centered title with hearts on both sides */
-    #header{
-      margin-bottom:14px;
-    }
+    #header{margin-bottom:14px;}
     .heroTitle{
       display:flex;
       align-items:center;
@@ -185,7 +183,6 @@
       text-shadow: 0 10px 26px rgba(0,0,0,.35);
       animation: floatUp linear forwards;
     }
-    /* SZYBCIEJ niż było: ~1.1s–1.6s */
     @keyframes floatUp{
       0%   { transform: translateY(0) scale(1); opacity:0; }
       10%  { opacity:1; }
@@ -202,7 +199,7 @@
       opacity:0;
       transform: translateY(6px) scale(0.98);
       animation: fadeInUp .75s ease-out forwards;
-      animation-delay:.35s;
+      animation-delay:.15s;
     }
     @keyframes fadeInUp{
       to{opacity:1; transform: translateY(0) scale(1)}
@@ -260,7 +257,7 @@
 
         <img
           class="fade-in"
-          src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWk4ZmpxYjBjNWZwc3h6b2FuNnp3dXd6bTQybmk1NW5ua2xwZ3phbyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/xiPqQWAF25RD4Omzyq/giphy.gif"
+          src="https://i.giphy.com/media/xiPqQWAF25RD4Omzyq/giphy.gif"
           alt="Taylor Swift celebrating"
           style="
             margin-top:16px;
@@ -274,7 +271,7 @@
           "
         >
 
-        <p class="fade-in" style="margin-top:18px;color:#ffd3ea;font-weight:700;animation-delay:1.05s">
+        <p class="fade-in" style="margin-top:18px;color:#ffd3ea;font-weight:700">
           Podjęłaś bardzo dobrą decyzję.<br>
           A 14 lutego wieczorem dowiesz się, <b>jak bardzo</b> dobrą… 😏
         </p>
@@ -282,14 +279,16 @@
 
       <!-- Audio -->
       <audio id="song" preload="auto">
-        <source src="love-story.mp3" type="audio/mpeg" />
+        <!-- Opcja B: Twoja aktualna nazwa pliku -->
+        <source src="Taylor_Swift_-_Love_Story_(mp3.pm).mp3" type="audio/mpeg" />
+        <!-- Opcja A (polecana): jeśli zmienisz nazwę pliku na love-story.mp3, odkomentuj linię poniżej i zakomentuj tę powyżej -->
+        <!-- <source src="love-story.mp3" type="audio/mpeg" /> -->
       </audio>
 
     </div>
   </div>
 
 <script>
-  // 10 pytań – poprawna odpowiedź w różnych pozycjach
   const QUIZ = [
     {
       q: "1) Jak się nazywała fancy restauracja w Bolonii, w której byliśmy podczas naszego weekendu walentynkowego?",
@@ -322,8 +321,8 @@
       c: 1
     },
     {
-      q: "7) W jakim kraju / gdzie będziemy w przyszłości mieszkać?",
-      a: ["We Włoszech", "W Polsce", "Nieważne gdzie, ważne że będziemy razem", "W USA"],
+      q: "7) Gdzie będziemy mieszkać w przyszłości?",
+      a: ["We Włoszech", "W Polsce", "Nieważne gdzie, ważne że razem", "W USA"],
       c: 2
     },
     {
@@ -363,11 +362,10 @@
     el.className = "burst";
     el.textContent = emoji;
 
-    // start near bottom, fly up FAST
-    const left = Math.random() * 100;          // vw
-    const size = 14 + Math.random() * 24;      // px
-    const duration = 1.1 + Math.random() * 0.5; // seconds (FASTER)
-    const delay = Math.random() * 0.05;        // almost none
+    const left = Math.random() * 100;
+    const size = 14 + Math.random() * 24;
+    const duration = 1.0 + Math.random() * 0.5; // szybko
+    const delay = Math.random() * 0.05;
 
     el.style.left = left + "vw";
     el.style.bottom = "-50px";
@@ -380,7 +378,6 @@
   }
 
   function burstEmojis(emoji, count){
-    // faster spawn (more dense, quicker)
     let spawned = 0;
     const interval = setInterval(() => {
       for(let k=0;k<10;k++){
@@ -433,13 +430,11 @@
       }, 520);
 
     } else {
-      // WRONG: stay on same question, allow retry
       answersEl.children[idx].style.borderColor = "rgba(255,80,80,.80)";
       answersEl.children[correctIdx].style.borderColor = "rgba(0,255,170,.55)";
       burstEmojis("😔", 90);
 
       setTimeout(() => {
-        // clear highlights and allow retry
         Array.from(answersEl.children).forEach(btn => btn.style.borderColor = "rgba(255,255,255,.15)");
         unlockButtons();
       }, 520);
@@ -458,21 +453,18 @@
     render();
   };
 
+  // ✅ KLUCZOWA ZMIANA: GIF + HURRA i muzyka od razu, bez czekania
   document.getElementById("yes").onclick = async () => {
-    burstEmojis("💖", 160);
+    finalBox.classList.add("hidden");
+    celebrateBox.classList.remove("hidden");
 
-    // Play music (works best because it’s triggered by user click)
     try { await song.play(); } catch(e) {}
 
-    setTimeout(() => {
-      finalBox.classList.add("hidden");
-      celebrateBox.classList.remove("hidden");
-      burstEmojis("😄", 70);
-    }, 900);
+    burstEmojis("💖", 160);
+    setTimeout(() => burstEmojis("😄", 70), 400);
   };
 
   document.getElementById("no").onclick = () => {
-    // no runs away + sad burst
     burstEmojis("😔", 60);
     const noBtn = document.getElementById("no");
     const dx = (Math.random()*180 - 90);
