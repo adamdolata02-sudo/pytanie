@@ -1,445 +1,240 @@
-K
-
 <!doctype html>
 <html lang="pl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Quiz Walentynkowy 💘</title>
+
   <style>
     :root{
-      --max: 860px;
-      --bg: #faf7fb;
-      --card: #ffffff;
-      --ink: #111;
-      --muted: rgba(0,0,0,.65);
-      --line: rgba(0,0,0,.08);
-      --shadow: 0 10px 28px rgba(0,0,0,.08);
-      --good: #1b7f3a;
-      --bad: #b3261e;
+      --bg:#0b0b12;
+      --card:#141427;
+      --text:#f5f5ff;
+      --muted:#b9b9d6;
+      --accent:#ff4da6;
+      --green:#22c55e;
+      --green2:#16a34a;
     }
-    *{ box-sizing: border-box; }
+    *{box-sizing:border-box}
     body{
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      margin:0; padding:24px;
-      background: var(--bg);
-      color: var(--ink);
-    }
-    .wrap{ max-width: var(--max); margin:0 auto; }
-    header{
-      background: var(--card);
-      border-radius: 16px;
-      padding: 18px 18px 12px;
-      box-shadow: var(--shadow);
-      margin-bottom: 16px;
-      position: relative;
-      overflow: hidden;
-    }
-    h1{ margin:0 0 6px; font-size: 22px; }
-    .sub{ margin:0; color: var(--muted); }
-
-    .toprow{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:radial-gradient(1200px 700px at 20% 0%, #1a0f2a 0%, var(--bg) 45%, #07070d 100%);
+      color:var(--text);
+      min-height:100vh;
       display:flex;
-      gap: 12px;
       align-items:center;
-      justify-content: space-between;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.8);
-      font-weight: 700;
-    }
-    .progress{
-      flex: 1;
-      min-width: 220px;
-      height: 12px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.04);
+      justify-content:center;
+      padding:24px;
       overflow:hidden;
     }
+    .wrap{width:min(780px,100%);}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:22px;
+      box-shadow:0 18px 60px rgba(0,0,0,.45);
+      position:relative;
+      z-index:2;
+    }
+    h1{margin:0 0 6px;font-size:22px}
+    p{margin:8px 0;color:var(--muted);line-height:1.35}
+    .badge{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(255,77,166,.16);
+      border:1px solid rgba(255,77,166,.35);
+      color:#ffd3ea;
+      white-space:nowrap;
+    }
+    .panel{
+      margin-top:14px;
+      padding:16px;
+      border-radius:14px;
+      background:rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .start{text-align:center}
+    .big{font-size:16px;color:var(--text);max-width:60ch;margin:12px auto}
+    .btn{
+      border-radius:14px;
+      padding:14px 18px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:16px;
+      border:none;
+    }
+    .btnStart{
+      background:linear-gradient(180deg,var(--green),var(--green2));
+      color:#06210f;
+      font-size:18px;
+      padding:16px 26px;
+      border-radius:18px;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .answers{display:grid;gap:10px}
+    .choice{
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.15);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      cursor:pointer;
+      text-align:left;
+      font-size:15px;
+    }
+    .choice:hover{background:rgba(255,255,255,.1)}
+    .progress{
+      height:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.1);
+      overflow:hidden;
+      margin-top:14px;
+    }
     .bar{
-      height: 100%;
-      width: 0%;
-      border-radius: 999px;
-      background: #111;
-      transition: width .35s ease;
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,var(--accent),#ff8bd1);
     }
-
-    form{
-      background: var(--card);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: var(--shadow);
-    }
-    .q{
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 14px;
-      margin: 12px 0;
-      transition: transform .12s ease, box-shadow .12s ease;
-    }
-    .q:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 10px 20px rgba(0,0,0,.06);
-    }
-    .q legend{
-      font-weight: 800;
-      margin-bottom: 10px;
-      padding: 0 6px;
-    }
-    .opt{
-      display:flex;
-      gap: 10px;
-      align-items:flex-start;
-      padding: 7px 8px;
-      border-radius: 12px;
-      transition: background .15s ease, transform .08s ease;
-      cursor: pointer;
-    }
-    .opt:hover{ background: rgba(0,0,0,.03); }
-    .opt:active{ transform: scale(.995); }
-    .opt input{ margin-top: 3px; }
-    .opt span{ line-height: 1.25rem; }
-
-    /* po sprawdzeniu */
-    .checked .opt{
-      cursor: default;
-    }
-    .checked .opt.correct{
-      background: rgba(27,127,58,.10);
-      outline: 1px solid rgba(27,127,58,.35);
-    }
-    .checked .opt.wrong{
-      background: rgba(179,38,30,.10);
-      outline: 1px solid rgba(179,38,30,.35);
-    }
-    .checked .q{
-      opacity: .98;
-    }
-
-    .actions{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 14px;
-    }
-    button{
-      border:0;
-      border-radius: 12px;
-      padding: 11px 14px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: transform .08s ease, opacity .15s ease;
-    }
-    button:active{ transform: scale(.99); }
-    button.primary{ background: #111; color: #fff; }
-    button.ghost{ background: #f2f2f2; color:#111; }
-    button:disabled{ opacity:.55; cursor:not-allowed; }
-
-    .result{
-      margin-top: 14px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: #f6f6ff;
-      border: 1px solid var(--line);
-      display:none;
-      animation: pop .25s ease;
-    }
-    @keyframes pop{
-      from{ transform: translateY(4px); opacity: .0; }
-      to{ transform: translateY(0); opacity: 1; }
-    }
-    .result .line{ margin-top: 6px; }
-    .small{ font-size: 12px; color: var(--muted); margin-top: 10px; }
-
-    /* serduszka konfetti */
+    .hidden{display:none}
+    .final{text-align:center}
+    .two{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .ghost{background:rgba(255,255,255,.08);color:var(--text)}
     .hearts{
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 9999;
-      display:none;
+      position:fixed;inset:0;pointer-events:none;z-index:1;
     }
     .heart{
-      position: absolute;
-      font-size: 18px;
-      animation: floatDown 1.4s ease-in forwards;
-      opacity: .95;
-      transform: translateY(-10px);
+      position:absolute;
+      font-size:18px;
+      animation:fly 4s linear forwards;
     }
-    @keyframes floatDown{
-      0%{ transform: translateY(-20px) scale(1); opacity: 0; }
-      10%{ opacity: 1; }
-      100%{ transform: translateY(110vh) scale(1.15); opacity: 0; }
-    }
-
-    @media (max-width: 480px){
-      body{ padding: 14px; }
+    @keyframes fly{
+      from{transform:translateY(100vh);opacity:1}
+      to{transform:translateY(-120vh);opacity:0}
     }
   </style>
 </head>
 
 <body>
-  <div class="hearts" id="hearts"></div>
+<div class="hearts" id="hearts"></div>
 
-  <div class="wrap">
-    <header>
-      <h1>Quiz Walentynkowy 💘</h1>
-      <p class="sub">Wybierz odpowiedź A/B/C/D. Wynik pokaże się na końcu.</p>
+<div class="wrap">
+<div class="card">
 
-      <div class="toprow">
-        <div class="badge">
-          <span>Postęp:</span>
-          <span id="doneTxt">0/10</span>
-        </div>
-        <div class="progress" aria-label="Pasek postępu">
-          <div class="bar" id="bar"></div>
-        </div>
-        <div class="badge">
-          <span id="statusTxt">Nie sprawdzone</span>
-        </div>
-      </div>
-    </header>
+<h1>Egzamin Walentynkowy 💘</h1>
+<div class="badge" id="badge">START</div>
 
-    <form id="quiz" novalidate>
-      <!-- 1 -->
-      <fieldset class="q" data-q="q1">
-        <legend>1. Jak się nazywała fancy restauracja, w której byliśmy podczas naszego weekendu walentynkowego w Bolonii?</legend>
-        <label class="opt"><input type="radio" name="q1" value="A"> <span>A. Vicolocolombina</span></label>
-        <label class="opt"><input type="radio" name="q1" value="B"> <span>B. Trattoria Da Menella Torre</span></label>
-        <label class="opt"><input type="radio" name="q1" value="C"> <span>C. Marsalino</span></label>
-        <label class="opt"><input type="radio" name="q1" value="D"> <span>D. Donatello</span></label>
-      </fieldset>
+<!-- START -->
+<div id="start" class="panel start">
+  <h2>Okej… wiem, że chcesz już usłyszeć to pytanie 😏</h2>
+  <p class="big">
+    Ono zdecyduje o Twoim losie na <b>14 lutego</b>.<br><br>
+    Ale najpierw… mały egzamin z <b>NAS</b>.<br><br>
+    (<b>10/10 poprawnych odpowiedzi</b> – inaczej wracamy na start 😌)
+  </p>
+  <button class="btn btnStart" id="startBtn">START ▶️</button>
+</div>
 
-      <!-- 2 -->
-      <fieldset class="q" data-q="q2">
-        <legend>2. Która pozycja była pierwsza podczas naszego pierwszego razu?</legend>
-        <label class="opt"><input type="radio" name="q2" value="A"> <span>A. Doggy</span></label>
-        <label class="opt"><input type="radio" name="q2" value="B"> <span>B. Cowgirl</span></label>
-        <label class="opt"><input type="radio" name="q2" value="C"> <span>C. Missionary</span></label>
-        <label class="opt"><input type="radio" name="q2" value="D"> <span>D. Spooning</span></label>
-      </fieldset>
+<!-- QUIZ -->
+<div id="quiz" class="panel hidden">
+  <h2 id="question"></h2>
+  <div class="answers" id="answers"></div>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+</div>
 
-      <!-- 3 -->
-      <fieldset class="q" data-q="q3">
-        <legend>3. Jaka jest moja ulubiona część Twojego ciała?</legend>
-        <label class="opt"><input type="radio" name="q3" value="A"> <span>A. Oczy</span></label>
-        <label class="opt"><input type="radio" name="q3" value="B"> <span>B. Dupcia</span></label>
-        <label class="opt"><input type="radio" name="q3" value="C"> <span>C. B-O-O-B-I-E-S</span></label>
-        <label class="opt"><input type="radio" name="q3" value="D"> <span>D. Każda</span></label>
-      </fieldset>
-
-      <!-- 4 -->
-      <fieldset class="q" data-q="q4">
-        <legend>4. Co piliśmy do posiłku, który pierwszy raz Ci ugotowałem?</legend>
-        <label class="opt"><input type="radio" name="q4" value="A"> <span>A. Cola Zero</span></label>
-        <label class="opt"><input type="radio" name="q4" value="B"> <span>B. Wino białe</span></label>
-        <label class="opt"><input type="radio" name="q4" value="C"> <span>C. Woda</span></label>
-        <label class="opt"><input type="radio" name="q4" value="D"> <span>D. Szampan</span></label>
-      </fieldset>
-
-      <!-- 5 -->
-      <fieldset class="q" data-q="q5">
-        <legend>5. Gdzie byliśmy na naszej pierwszej randce?</legend>
-        <label class="opt"><input type="radio" name="q5" value="A"> <span>A. Na pizzy</span></label>
-        <label class="opt"><input type="radio" name="q5" value="B"> <span>B. Na bilardzie</span></label>
-        <label class="opt"><input type="radio" name="q5" value="C"> <span>C. W kawiarni</span></label>
-        <label class="opt"><input type="radio" name="q5" value="D"> <span>D. Na spacerze nad jeziorem</span></label>
-      </fieldset>
-
-      <!-- 6 -->
-      <fieldset class="q" data-q="q6">
-        <legend>6. Jakie jest nasze wspólne ulubione miejsce do bycia?</legend>
-        <label class="opt"><input type="radio" name="q6" value="A"> <span>A. Na imprezie</span></label>
-        <label class="opt"><input type="radio" name="q6" value="B"> <span>B. W samochodzie</span></label>
-        <label class="opt"><input type="radio" name="q6" value="C"> <span>C. Na plaży</span></label>
-        <label class="opt"><input type="radio" name="q6" value="D"> <span>D. Pod kołderką</span></label>
-      </fieldset>
-
-      <!-- 7 -->
-      <fieldset class="q" data-q="q7">
-        <legend>7. W jakim kraju / gdzie będziemy w przyszłości mieszkać?</legend>
-        <label class="opt"><input type="radio" name="q7" value="A"> <span>A. We Włoszech</span></label>
-        <label class="opt"><input type="radio" name="q7" value="B"> <span>B. W Polsce</span></label>
-        <label class="opt"><input type="radio" name="q7" value="C"> <span>C. W USA</span></label>
-        <label class="opt"><input type="radio" name="q7" value="D"> <span>D. Nieważne gdzie, ważne że będziemy razem</span></label>
-      </fieldset>
-
-      <!-- 8 -->
-      <fieldset class="q" data-q="q8">
-        <legend>8. Co jest naszym największym wspólnym luksusem?</legend>
-        <label class="opt"><input type="radio" name="q8" value="A"> <span>A. Czas</span></label>
-        <label class="opt"><input type="radio" name="q8" value="B"> <span>B. Spokój</span></label>
-        <label class="opt"><input type="radio" name="q8" value="C"> <span>C. Podróże</span></label>
-        <label class="opt"><input type="radio" name="q8" value="D"> <span>D. Seks</span></label>
-      </fieldset>
-
-      <!-- 9 -->
-      <fieldset class="q" data-q="q9">
-        <legend>9. Co jest fundamentem naszego związku?</legend>
-        <label class="opt"><input type="radio" name="q9" value="A"> <span>A. Pasja</span></label>
-        <label class="opt"><input type="radio" name="q9" value="B"> <span>B. Przyjaźń</span></label>
-        <label class="opt"><input type="radio" name="q9" value="C"> <span>C. Chemia</span></label>
-        <label class="opt"><input type="radio" name="q9" value="D"> <span>D. Lojalność</span></label>
-      </fieldset>
-
-      <!-- 10 -->
-      <fieldset class="q" data-q="q10">
-        <legend>10. Co jest jedyną pewną rzeczą w moich planach?</legend>
-        <label class="opt"><input type="radio" name="q10" value="A"> <span>A. Sukces</span></label>
-        <label class="opt"><input type="radio" name="q10" value="B"> <span>B. Stabilizacja</span></label>
-        <label class="opt"><input type="radio" name="q10" value="C"> <span>C. Zarabianie dużej ilości pieniędzy / hajsu</span></label>
-        <label class="opt"><input type="radio" name="q10" value="D"> <span>D. Kochać cię</span></label>
-      </fieldset>
-
-      <div class="actions">
-        <button class="primary" type="submit" id="checkBtn">Sprawdź wynik</button>
-        <button class="ghost" type="button" id="resetBtn">Wyczyść</button>
-      </div>
-
-      <div class="result" id="resultBox" aria-live="polite"></div>
-      <div class="small">Tip: Zapisz jako <strong>quiz.html</strong> i otwórz w przeglądarce.</div>
-    </form>
+<!-- FINAL -->
+<div id="final" class="panel final hidden">
+  <h2>Oficjalnie 😳</h2>
+  <p class="big"><b>Czy zostaniesz moją Walentynką? 💘</b></p>
+  <div class="two">
+    <button class="btn" id="yes">TAK 💖</button>
+    <button class="btn ghost" id="no">NIE 😶</button>
   </div>
+</div>
 
-  <script>
-    const correct = {
-      q1: "D",
-      q2: "C",
-      q3: "D",
-      q4: "D",
-      q5: "D",
-      q6: "D",
-      q7: "D",
-      q8: "D",
-      q9: "D",
-      q10:"D"
-    };
+<audio id="song">
+  <source src="love-story.mp3" type="audio/mpeg">
+</audio>
 
-    const form = document.getElementById("quiz");
-    const resultBox = document.getElementById("resultBox");
-    const resetBtn = document.getElementById("resetBtn");
-    const checkBtn = document.getElementById("checkBtn");
-    const doneTxt = document.getElementById("doneTxt");
-    const statusTxt = document.getElementById("statusTxt");
-    const bar = document.getElementById("bar");
-    const hearts = document.getElementById("hearts");
+</div>
+</div>
 
-    function answeredCount(){
-      let n = 0;
-      Object.keys(correct).forEach(q => {
-        if (form.querySelector(`input[name="${q}"]:checked`)) n++;
-      });
-      return n;
-    }
+<script>
+const QUIZ = [
+ {q:"Jak się nazywała fancy restauracja w Bolonii?", a:["Donatello","Marsalino","Vicolocolombina","Trattoria Da Menella Torre"], c:0},
+ {q:"Która pozycja była pierwsza podczas naszego pierwszego razu?", a:["Missionary","Doggy","Cowgirl","Spooning"], c:0},
+ {q:"Jaka jest moja ulubiona część Twojego ciała?", a:["Każda","Oczy","Bubis","Tyłek"], c:0},
+ {q:"Co piliśmy do posiłku, który pierwszy raz Ci ugotowałem?", a:["Szampan","Wino białe","Cola Zero","Woda"], c:0},
+ {q:"Gdzie byliśmy na naszej pierwszej randce?", a:["Na spacerze nad jeziorem","W kawiarni","Na pizzy","Na bilardzie"], c:0},
+ {q:"Nasze ulubione miejsce do bycia razem?", a:["Pod kołderką","Na plaży","W samochodzie","Na imprezie"], c:0},
+ {q:"Gdzie będziemy mieszkać w przyszłości?", a:["Nieważne gdzie, ważne że razem","USA","Polska","Włochy"], c:0},
+ {q:"Nasz największy wspólny luksus?", a:["Seks","Czas","Podróże","Spokój"], c:0},
+ {q:"Fundament naszego związku?", a:["Lojalność","Chemia","Przyjaźń","Pasja"], c:0},
+ {q:"Jedyna pewna rzecz w moich planach?", a:["Kochać Cię","Sukces","Stabilizacja","Hajs"], c:0}
+];
 
-    function updateProgress(){
-      const done = answeredCount();
-      const total = Object.keys(correct).length;
-      doneTxt.textContent = `${done}/${total}`;
-      bar.style.width = `${Math.round((done/total)*100)}%`;
-    }
+let i=0;
+const start=document.getElementById("start");
+const quiz=document.getElementById("quiz");
+const final=document.getElementById("final");
+const q=document.getElementById("question");
+const a=document.getElementById("answers");
+const bar=document.getElementById("bar");
+const hearts=document.getElementById("hearts");
+const song=document.getElementById("song");
 
-    function clearMarking(){
-      document.querySelectorAll(".q").forEach(fs => {
-        fs.classList.remove("checked");
-        fs.querySelectorAll(".opt").forEach(lab => {
-          lab.classList.remove("correct","wrong");
-        });
-      });
-    }
+document.getElementById("startBtn").onclick=()=>{
+ start.classList.add("hidden");
+ quiz.classList.remove("hidden");
+ render();
+};
 
-    function throwHearts(){
-      hearts.innerHTML = "";
-      hearts.style.display = "block";
-      const count = 28;
-      for (let i=0;i<count;i++){
-        const s = document.createElement("div");
-        s.className = "heart";
-        s.textContent = Math.random() > 0.5 ? "💘" : "💖";
-        s.style.left = Math.random()*100 + "vw";
-        s.style.animationDelay = (Math.random()*0.35) + "s";
-        s.style.fontSize = (14 + Math.random()*14) + "px";
-        hearts.appendChild(s);
-      }
-      setTimeout(() => { hearts.style.display = "none"; }, 1700);
-    }
+function render(){
+ q.textContent=QUIZ[i].q;
+ a.innerHTML="";
+ QUIZ[i].a.forEach((t,idx)=>{
+  const b=document.createElement("button");
+  b.className="choice";
+  b.textContent=t;
+  b.onclick=()=>pick(idx);
+  a.appendChild(b);
+ });
+ bar.style.width=(i/QUIZ.length*100)+"%";
+}
 
-    // live progress
-    form.addEventListener("change", () => {
-      updateProgress();
-    });
+function pick(idx){
+ if(idx!==QUIZ[i].c){location.reload();return;}
+ i++;
+ if(i<QUIZ.length)render();
+ else finish();
+}
 
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
+function finish(){
+ quiz.classList.add("hidden");
+ final.classList.remove("hidden");
+ bar.style.width="100%";
+}
 
-      clearMarking();
+document.getElementById("yes").onclick=async()=>{
+ for(let i=0;i<120;i++){
+  const h=document.createElement("div");
+  h.className="heart";
+  h.textContent="💖";
+  h.style.left=Math.random()*100+"vw";
+  h.style.fontSize=14+Math.random()*22+"px";
+  hearts.appendChild(h);
+  setTimeout(()=>h.remove(),4000);
+ }
+ try{await song.play();}catch(e){}
+};
 
-      let score = 0;
-      const missed = [];
-
-      Object.keys(correct).forEach((qName, idx) => {
-        const fs = document.querySelector(`.q[data-q="${qName}"]`);
-        const chosen = form.querySelector(`input[name="${qName}"]:checked`);
-        const userVal = chosen ? chosen.value : null;
-
-        const labels = fs.querySelectorAll(".opt");
-        labels.forEach(lab => {
-          const input = lab.querySelector("input");
-          const v = input.value;
-
-          if (v === correct[qName]) lab.classList.add("correct");
-          if (chosen && v === userVal && userVal !== correct[qName]) lab.classList.add("wrong");
-        });
-
-        fs.classList.add("checked");
-
-        if (userVal === correct[qName]) score++;
-        else missed.push(idx + 1);
-      });
-
-      const total = Object.keys(correct).length;
-      statusTxt.textContent = "Sprawdzone ✅";
-
-      let msg = `<div><strong>Wynik:</strong> ${score}/${total} 💘</div>`;
-      if (missed.length === 0) {
-        msg += `<div class="line">Idealnie. 10/10. 😌</div>`;
-        msg += `<div class="line"><strong>Kocham cię.</strong></div>`;
-        throwHearts();
-      } else {
-        msg += `<div class="line">Pytania do poprawy: <strong>${missed.join(", ")}</strong></div>`;
-      }
-
-      resultBox.innerHTML = msg;
-      resultBox.style.display = "block";
-      resultBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
-
-      // opcjonalnie: zablokuj ponowne sprawdzanie bez resetu
-      checkBtn.disabled = true;
-    });
-
-    resetBtn.addEventListener("click", () => {
-      form.reset();
-      clearMarking();
-      resultBox.style.display = "none";
-      resultBox.innerHTML = "";
-      statusTxt.textContent = "Nie sprawdzone";
-      checkBtn.disabled = false;
-      updateProgress();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-
-    // init
-    updateProgress();
-  </script>
+document.getElementById("no").onclick=()=>{
+ document.getElementById("no").style.transform=
+  `translate(${Math.random()*120-60}px,${Math.random()*80-40}px)`;
+};
+</script>
 </body>
 </html>
